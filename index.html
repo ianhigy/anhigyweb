@@ -1,1 +1,806 @@
-test
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anhigy - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            background: linear-gradient(to right, #ef4444, #f87171, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            color: #737373;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-tag {
+            color: #ef4444;
+            font-family: monospace;
+            font-size: 0.875rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .btn-discord {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: linear-gradient(to right, #dc2626, #b91c1c);
+            border-radius: 9999px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 3rem;
+            transition: all 0.3s;
+        }
+
+        .btn-discord:hover {
+            background: linear-gradient(to right, #ef4444, #dc2626);
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #525252;
+            cursor: pointer;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* Section */
+        section {
+            padding: 128px 24px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        .text-red {
+            color: #ef4444;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .skill-item {
+            margin-bottom: 1rem;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .skill-name {
+            font-weight: 500;
+        }
+
+        .skill-percent {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .skill-bar {
+            height: 12px;
+            background: #171717;
+            border-radius: 9999px;
+            border: 1px solid #262626;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(to right, #dc2626, #ef4444);
+            transition: width 1s ease-out;
+            position: relative;
+        }
+
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Projects */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: rgba(10, 10, 10, 0.5);
+            border: 1px solid #262626;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .project-content {
+            padding: 32px;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .project-desc {
+            color: #a3a3a3;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background: #171717;
+            border: 1px solid #262626;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: #a3a3a3;
+        }
+
+        .btn-project {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #dc2626;
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-project:hover {
+            background: #b91c1c;
+        }
+
+        /* Discord Profile */
+        .discord-card {
+            max-width: 500px;
+            margin: 0 auto 32px;
+            padding: 24px;
+            background: rgba(23, 23, 23, 0.8);
+            border: 1px solid #262626;
+            border-radius: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .discord-card:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .discord-profile {
+            display: flex;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .discord-avatar {
+            position: relative;
+        }
+
+        .avatar-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            background: #171717;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .status-online { background: #22c55e; }
+        .status-idle { background: #eab308; }
+        .status-dnd { background: #ef4444; }
+        .status-offline { background: #737373; }
+
+        .discord-info {
+            flex: 1;
+        }
+
+        .discord-username {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .discord-tag {
+            color: #a3a3a3;
+            font-size: 0.875rem;
+            margin-bottom: 12px;
+        }
+
+        .discord-status-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: #737373;
+            margin-bottom: 12px;
+        }
+
+        .discord-activity {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(38, 38, 38, 0.5);
+            border: 1px solid rgba(64, 64, 64, 0.5);
+            border-radius: 8px;
+        }
+
+        .activity-label {
+            font-size: 0.75rem;
+            color: #737373;
+            margin-bottom: 4px;
+        }
+
+        .activity-text {
+            font-size: 0.875rem;
+            color: #d4d4d4;
+        }
+
+        /* Contact */
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .contact-card {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 32px;
+            background: rgba(23, 23, 23, 0.8);
+            border: 1px solid #262626;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(to bottom right, #dc2626, #b91c1c);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            color: #737373;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .contact-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            width: 40px;
+            height: 40px;
+            background: #262626;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .contact-card:hover .copy-btn {
+            background: #404040;
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 24px;
+            border-top: 1px solid #171717;
+            text-align: center;
+            color: #525252;
+            font-size: 0.875rem;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #262626;
+            border-top-color: #ef4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 64px 24px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <p class="hero-tag">Welcome to my world</p>
+        <h1 class="hero-title">Anhigy</h1>
+        <p class="hero-subtitle">Itz_Anhigy</p>
+        <a href__="https://discord.com/users/1445477596451049502" target="_blank" class="btn-discord">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Discord
+        </a>
+        <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">O <span class="text-red">mně</span></h2>
+            <div class="skills-grid">
+                <div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">HTML</span>
+                            <span class="skill-percent">100%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="100"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">CSS</span>
+                            <span class="skill-percent">80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="80"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">JavaScript</span>
+                            <span class="skill-percent">60%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="60"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">PHP</span>
+                            <span class="skill-percent">10%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="10"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">MC Skript</span>
+                            <span class="skill-percent">50%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="50"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <span class="skill-name">Discord Python</span>
+                            <span class="skill-percent">89%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="89"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section>
+        <div class="container">
+            <h2 class="section-title">Mé <span class="text-red">projekty</span></h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop" alt="Projekt 1" class="project-image">
+                    <div class="project-content">
+                        <h3 class="project-title">Projekt 1</h3>
+                        <p class="project-desc">Popis tvého prvního projektu. Například webová aplikace nebo něco úžasného co jsi vytvořil.</p>
+                        <div class="project-tags">
+                            <span class="tag">React</span>
+                            <span class="tag">Node.js</span>
+                            <span class="tag">MongoDB</span>
+                        </div>
+                        <a href__="https://example.com" target="_blank" class="btn-project">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            Navštívit web
+                        </a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=500&fit=crop" alt="Projekt 2" class="project-image">
+                    <div class="project-content">
+                        <h3 class="project-title">Projekt 2</h3>
+                        <p class="project-desc">Další úžasný webový projekt který stojí za zmínku. Moderní design a funkcionalita.</p>
+                        <div class="project-tags">
+                            <span class="tag">HTML</span>
+                            <span class="tag">CSS</span>
+                            <span class="tag">JavaScript</span>
+                        </div>
+                        <a href__="https://example.com" target="_blank" class="btn-project">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            Navštívit web
+                        </a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=500&fit=crop" alt="Projekt 3" class="project-image">
+                    <div class="project-content">
+                        <h3 class="project-title">Projekt 3</h3>
+                        <p class="project-desc">Třetí projekt který ukazuje tvoje dovednosti a kreativitu ve webovém vývoji.</p>
+                        <div class="project-tags">
+                            <span class="tag">PHP</span>
+                            <span class="tag">MySQL</span>
+                            <span class="tag">Bootstrap</span>
+                        </div>
+                        <a href__="https://example.com" target="_blank" class="btn-project">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            Navštívit web
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section>
+        <div class="container">
+            <h2 class="section-title">Pojďme se <span class="text-red">spojit</span></h2>
+            <p style="text-align: center; color: #737373; margin-bottom: 3rem; font-size: 1.125rem;">
+                Máš otázku nebo se chceš jen pozdravit? Kontaktuj mě!
+            </p>
+
+            <!-- Discord Profile -->
+            <div id="discordProfile" class="discord-card">
+                <div class="discord-profile">
+                    <div class="discord-avatar">
+                        <div class="loading"></div>
+                    </div>
+                    <div class="discord-info">
+                        <div class="loading"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Methods -->
+            <div class="contact-methods">
+                <div class="contact-card" onclick="copyEmail()">
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <div class="contact-info">
+                        <p class="contact-label">Email</p>
+                        <p class="contact-value">servers.anhigy@outlook.com</p>
+                    </div>
+                    <div class="copy-btn" id="copyBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" id="copyIcon">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" id="checkIcon" class="hidden">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© <span id="year"></span> <span class="text-red">Anhigy</span>. Všechna práva vyhrazena.</p>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Animate skill bars on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBars = entry.target.querySelectorAll('.skill-progress');
+                    progressBars.forEach(bar => {
+                        const width = bar.getAttribute('data-width');
+                        bar.style.width = width + '%';
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        observer.observe(document.getElementById('about'));
+
+        // Fetch Discord profile
+        async function fetchDiscordProfile() {
+            const userId = '1445477596451049502';
+            const profileContainer = document.getElementById('discordProfile');
+
+            try {
+                const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const user = data.data.discord_user;
+                    const status = data.data.discord_status;
+                    const activities = data.data.activities;
+
+                    const avatarUrl = user.avatar
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=256`
+                        : null;
+
+                    const statusTexts = {
+                        online: 'Online',
+                        idle: 'Pryč',
+                        dnd: 'Nerušit',
+                        offline: 'Offline'
+                    };
+
+                    const customStatus = activities.find(a => a.type === 4);
+                    const mainActivity = activities.find(a => a.type !== 4);
+
+                    let html = `
+                        <div class="discord-profile">
+                            <div class="discord-avatar">
+                                ${avatarUrl 
+                                    ? `<img src="${avatarUrl}" alt="${user.username}" class="avatar-img">`
+                                    : `<div class="avatar-img" style="background: linear-gradient(to bottom right, #dc2626, #b91c1c); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700;">${user.username[0]}</div>`
+                                }
+                                <div class="status-indicator">
+                                    <div class="status-dot status-${status}"></div>
+                                </div>
+                            </div>
+                            <div class="discord-info">
+                                <h3 class="discord-username">${user.display_name || user.username}</h3>
+                                <p class="discord-tag">@${userId}</p>
+                                <div class="discord-status-text">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                    </svg>
+                                    ${statusTexts[status]}
+                                </div>
+                                ${customStatus ? `
+                                    <div class="discord-activity">
+                                        <p class="activity-label">Na co myslím</p>
+                                        <p class="activity-text">${customStatus.state || customStatus.name}</p>
+                                    </div>
+                                ` : ''}
+                                ${mainActivity ? `
+                                    <div class="discord-activity">
+                                        <p class="activity-label">Aktivita</p>
+                                        <p class="activity-text">${mainActivity.name}</p>
+                                        ${mainActivity.details ? `<p style="font-size: 0.75rem; color: #737373; margin-top: 4px;">${mainActivity.details}</p>` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #262626; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.75rem; color: #525252; text-transform: uppercase; letter-spacing: 0.05em;">Discord</span>
+                            <a href__="https://discord.com/users/${userId}" target="_blank" style="font-size: 0.75rem; color: #ef4444; text-decoration: none;">Zobrazit profil →</a>
+                        </div>
+                    `;
+
+                    profileContainer.innerHTML = html;
+                } else {
+                    throw new Error('Failed to fetch');
+                }
+            } catch (error) {
+                profileContainer.innerHTML = `
+                    <div class="discord-profile">
+                        <div class="discord-avatar">
+                            <div class="avatar-img" style="background: linear-gradient(to bottom right, #dc2626, #b91c1c); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700;">I</div>
+                            <div class="status-indicator">
+                                <div class="status-dot status-online"></div>
+                            </div>
+                        </div>
+                        <div class="discord-info">
+                            <h3 class="discord-username">Itz_Anhigy</h3>
+                            <p class="discord-tag">@itz_anhigy</p>
+                            <div class="discord-status-text">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                Online
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        fetchDiscordProfile();
+        setInterval(fetchDiscordProfile, 30000); // Refresh every 30 seconds
+
+        // Copy email function
+        function copyEmail() {
+            const email = 'servers.anhigy@outlook.com';
+            navigator.clipboard.writeText(email).then(() => {
+                const copyIcon = document.getElementById('copyIcon');
+                const checkIcon = document.getElementById('checkIcon');
+                
+                copyIcon.classList.add('hidden');
+                checkIcon.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    copyIcon.classList.remove('hidden');
+                    checkIcon.classList.add('hidden');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
