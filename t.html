@@ -5,20 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NationCraft.cz - Československý Minecraft Server</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Font Awesome z CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Framer Motion -->
     <script src="https://unpkg.com/framer-motion@11/dist/framer-motion.js"></script>
     
-    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
@@ -39,7 +34,6 @@
             margin-bottom: 1rem;
         }
         
-        /* Dialog Overlay */
         .dialog-overlay {
             position: fixed;
             inset: 0;
@@ -62,7 +56,6 @@
             position: relative;
         }
         
-        /* Scrollbar Styling */
         .dialog-content::-webkit-scrollbar {
             width: 8px;
         }
@@ -81,7 +74,6 @@
             background: rgba(59, 130, 246, 0.5);
         }
 
-        /* Cookie Banner */
         .cookie-banner {
             position: fixed;
             bottom: 0;
@@ -102,29 +94,28 @@
         const { useState, useEffect } = React;
         const { motion, AnimatePresence } = window.Motion;
 
-        // News Data
         const newsData = [
           {
             id: 1,
-            title: 'OTEVŘENÍ SERVERU',
-            excerpt: 'Server otevřený! Připoj se a užij si zábavu s ostatními hráči!',
-            content: 'Vítejte na NationCraft.cz! Jsme rádi, že můžeme oficiálně otevřít naše brány pro všechny hráče. Server je nyní plně funkční a připravený na vaše dobrodružství.\n\nCo nás čeká:\n- Duely s různými režimy\n- Aktívní komunita\n- Pravidelné eventy\n- A mnoho dalšího!\n\nPřipojte se k nám ještě dnes a staňte se součástí naší rostoucí komunity!',
+            title: 'OVĚŘOVÁNÍ',
+            excerpt: 'rád bych vás touto cestou informoval, že s ohledem na to, že zde bylo mnoho hráčů, kteří nebyly aktivní jsme se rozhodli udělat Verifikaci.',
+            content: 'rád bych vás touto cestou informoval, že s ohledem na to, že zde bylo mnoho hráčů, kteří nebyly aktivní jsme se rozhodli udělat Verifikaci. Tato verifikace ochrání server proti botům, alt účtům, apod.\n\npostup toho, jak se můžete verifikovat naleznete v kanálu ⁠https://discord.com/channels/1136653833343357019/1437208158895472730. Budeme se těšit na naši další společnou cestu.',
             date: '1.1.2026',
             type: 'Oznámení',
-            author: 'Admin Team',
-            readTime: '2 min',
+            author: 'Vedení • MaTTy',
+            readTime: '1 min',
             image: null
           },
           {
             id: 2,
-            title: 'DUELOVACÍ SYSTÉM',
-            excerpt: 'Nový duelovací systém je k dispozici! Vyzvi své přátele na souboj.',
-            content: 'Jsme nadšení, že vám můžeme představit náš nový duelovací systém! Tento systém nabízí napínavé 1v1 souboje s různými režimy a mapami.\n\nFunkce:\n- Více herních módů\n- Žebříčky nejlepších hráčů\n- Rankované i neranké zápasy\n- Statistiky a sledování pokroku\n\nVyzvi své přátele nebo se pusť do rankovaných zápasů a dokaž, že jsi ten nejlepší!',
-            date: '1.1.2026',
-            type: 'Novinka',
-            author: 'Itz_Anhigy',
-            readTime: '3 min',
-            image: './survival.webp'
+            title: 'NÁBOR HELPERŮ',
+            excerpt: 'Vzhledem k neblahým událostem, které se dnes staly na serveru jsem byl nucen založit nábor na pozici Helper/ka.\nVíce informací o tomto náboru se dozvíte na odkazu, který bude k této zprávě',
+            content: 'Zdravím všechny hráče serveru <strong>NationCraft.cz</strong>',
+            date: '3.1.2026',
+            type: 'Nábor',
+            author: 'Vedení • MaTTy',
+            readTime: '2 min',
+            image: null
           },
           {
             id: 3,
