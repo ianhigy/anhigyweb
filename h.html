@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NationCraft.cz - Československý Minecraft Server</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome z CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@11/dist/framer-motion.js"></script>
+    
+    <!-- Babel Standalone -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0e1a;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .prose p {
+            margin-bottom: 1rem;
+        }
+        
+        /* Dialog Overlay */
+        .dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .dialog-content {
+            background: #0a0e1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            max-width: 48rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Scrollbar Styling */
+        .dialog-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .dialog-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .dialog-content::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+        }
+        
+        .dialog-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+
+        /* Cookie Banner */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // News Data
+        const newsData = [
+          {
+            id: 1,
+            title: 'OTEVŘENÍ SERVERU',
+            excerpt: 'Server otevřený! Připoj se a užij si zábavu s ostatními hráči!',
+            content: 'Vítejte na NationCraft.cz! Jsme rádi, že můžeme oficiálně otevřít naše brány pro všechny hráče. Server je nyní plně funkční a připravený na vaše dobrodružství.\n\nCo nás čeká:\n- Duely s různými režimy\n- Aktívní komunita\n- Pravidelné eventy\n- A mnoho dalšího!\n\nPřipojte se k nám ještě dnes a staňte se součástí naší rostoucí komunity!',
+            date: '1.1.2026',
+            type: 'Oznámení',
+            author: 'Admin Team',
+            readTime: '2 min',
+            image: null
+          },
+          {
+            id: 2,
+            title: 'DUELOVACÍ SYSTÉM',
+            excerpt: 'Nový duelovací systém je k dispozici! Vyzvi své přátele na souboj.',
+            content: 'Jsme nadšení, že vám můžeme představit náš nový duelovací systém! Tento systém nabízí napínavé 1v1 souboje s různými režimy a mapami.\n\nFunkce:\n- Více herních módů\n- Žebříčky nejlepších hráčů\n- Rankované i neranké zápasy\n- Statistiky a sledování pokroku\n\nVyzvi své přátele nebo se pusť do rankovaných zápasů a dokaž, že jsi ten nejlepší!',
+            date: '1.1.2026',
+            type: 'Novinka',
+            author: 'Itz_Anhigy',
+            readTime: '3 min',
+            image: './survival.webp'
+          },
+          {
+            id: 3,
+            title: 'HLASOVÁNÍ O EVENTECH',
+            excerpt: 'Hlasuj o tom, jaké eventy chceš vidět na serveru! Tvůj hlas rozhoduje.',
+            content: 'Tvůj názor je pro nás důležitý! Chceme vytvořit server, který bude plně odpovídat vašim přáním.\n\nHlasuj o:\n- Typech eventů\n- Odměnách\n- Termínech konání\n- A mnohem více!\n\nKaždý hlas se počítá. Zapoj se do našeho Discord serveru a řekni nám, co by ses chtěl vidět!',
+            date: '1.1.2026',
+            type: 'Event',
+            author: 'Community Manager',
+            readTime: '2 min',
+            image: null
+          }
+        ];
+
+        // Cookie Banner Component
+        function CookieBanner() {
+            const [showBanner, setShowBanner] = useState(false);
+
+            useEffect(() => {
+                const consent = localStorage.getItem('cookieConsent');
+                if (!consent) {
+                    setShowBanner(true);
+                }
+            }, []);
+
+            const acceptCookies = () => {
+                localStorage.setItem('cookieConsent', 'accepted');
+                setShowBanner(false);
+            };
+
+            const declineCookies = () => {
+                localStorage.setItem('cookieConsent', 'declined');
+                setShowBanner(false);
+            };
+
+            if (!showBanner) return null;
+
+            return (
+                <motion.div 
+                    className="cookie-banner"
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 100, opacity: 0 }}
+                >
+                    <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <h3 className="text-white font-bold mb-2">🍪 Používáme cookies</h3>
+                            <p className="text-sm text-gray-400">
+                                Tento web používá cookies pro zlepšení uživatelského zážitku a analytické účely. 
+                                Pokračováním souhlasíte s našimi{' '}
+                                <a href="#" className="text-blue-400 hover:text-blue-300 underline">
+                                    podmínkami použití cookies
+                                </a>.
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={declineCookies}
+                                className="px-6 py-2 rounded-xl backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all"
+                            >
+                                Odmítnout
+                            </button>
+                            <button
+                                onClick={acceptCookies}
+                                className="px-6 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 transition-all"
+                            >
+                                Přijmout
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        }
+
+        // Hero Section Component
+        function HeroSection() {
+            const [copied, setCopied] = useState(false);
+            const [playerCount, setPlayerCount] = useState(0);
+            const [isOnline, setIsOnline] = useState(false);
+
+            useEffect(() => {
+                const fetchPlayers = async () => {
+                    try {
+                        const res = await fetch('https://api.mcsrvstat.us/3/alpha.argonix.eu:26217');
+                        const data = await res.json();
+                        if (data.online && data.players) {
+                            setIsOnline(true);
+                            setPlayerCount(data.players.online || 0);
+                        } else {
+                            setIsOnline(false);
+                        }
+                    } catch (error) {
+                        console.error('Failed to fetch player count');
+                        setIsOnline(false);
+                    }
+                };
+                fetchPlayers();
+                const interval = setInterval(fetchPlayers, 60000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const copyIP = (ip) => {
+                navigator.clipboard.writeText(ip);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            return (
+                <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 bg-[#0a0e1a]" />
+                        <div className="absolute inset-0 opacity-50">
+                            <img 
+                                src="./background.png"
+                                alt="Background"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/30 via-[#0a0e1a]/50 to-[#0a0e1a]" />
+                        
+                        <div className="absolute inset-0 opacity-5">
+                            <div className="absolute inset-0" style={{
+                                backgroundImage: 'linear-gradient(rgba(59,130,246,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.15) 1px, transparent 1px)',
+                                backgroundSize: '80px 80px',
+                                transform: 'rotate(-3deg) scale(1.2)'
+                            }} />
+                        </div>
+
+                        <motion.div
+                            className="absolute top-1/3 left-1/4 w-[600px] h-[600px] rounded-full bg-blue-500/8 blur-[120px]"
+                            animate={{ 
+                                x: [0, 50, 0],
+                                y: [0, -30, 0],
+                                scale: [1, 1.2, 1], 
+                                opacity: [0.15, 0.3, 0.15] 
+                            }}
+                            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                        <motion.div
+                            className="absolute bottom-1/3 right-1/4 w-[550px] h-[550px] rounded-full bg-indigo-500/8 blur-[120px]"
+                            animate={{ 
+                                x: [0, -60, 0],
+                                y: [0, 40, 0],
+                                scale: [1.2, 1, 1.2], 
+                                opacity: [0.15, 0.3, 0.15] 
+                            }}
+                            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                    </div>
+
+                    {/* Navigation */}
+                    <motion.nav 
+                        className="fixed top-0 left-0 right-0 z-50 px-6 py-6"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <div className="max-w-7xl mx-auto flex items-center justify-between backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-3xl px-8 py-4">
+                            <div className="flex items-center gap-3">
+                                <img 
+                                    src="./logo.png"
+                                    alt="NationCraft"
+                                    className="w-12 h-12 rounded-xl object-cover"
+                                />
+                                <span className="text-xl font-bold text-white">
+                                    NationCraft
+                                </span>
+                            </div>
+
+                            <div className="hidden md:flex items-center gap-8">
+                                {['Domů', 'Tým', 'Pravidla', 'Hlasování', 'Nábory', 'Store'].map((item) => (
+                                    <a 
+                                        key={item}
+                                        href="#"
+                                        className="text-sm text-gray-400 hover:text-white transition-colors relative group"
+                                    >
+                                        {item}
+                                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300" />
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.nav>
+
+                    {/* Hero Content */}
+                    <div className="relative z-10 text-center px-4 md:px-6 max-w-7xl mx-auto pt-24 md:pt-32 pb-20 md:pb-0">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                        >
+                            <motion.div 
+                                className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-2 md:py-2.5 rounded-full backdrop-blur-xl bg-black/40 border border-white/20 shadow-2xl mb-6 md:mb-8"
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.3, duration: 0.6 }}
+                            >
+                                <motion.span 
+                                    className={`w-2.5 h-2.5 rounded-full shadow-lg ${isOnline ? 'bg-green-500 shadow-green-500/50' : 'bg-red-500 shadow-red-500/50'}`}
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                />
+                                <span className="text-xs md:text-sm text-gray-300">
+                                    {isOnline ? 'Server je online' : 'Server je offline'}
+                                </span>
+                                {isOnline && (
+                                    <span className="text-xs md:text-sm font-bold text-blue-400">• {playerCount} hráčů</span>
+                                )}
+                            </motion.div>
+
+                            <motion.h1 
+                                className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 leading-tight"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5, duration: 0.8 }}
+                            >
+                                <span className="text-white drop-shadow-2xl">NationCraft.cz</span>
+                            </motion.h1>
+
+                            <motion.p 
+                                className="text-base md:text-lg lg:text-xl text-white max-w-2xl mx-auto mb-6 md:mb-10 leading-relaxed drop-shadow-lg px-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6, duration: 0.8 }}
+                            >
+                                Připoj se k československému Minecraft serveru
+                            </motion.p>
+
+                            <motion.div 
+                                className="flex justify-center mb-6 md:mb-10"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.9, duration: 0.6 }}
+                            >
+                                <motion.button
+                                    onClick={() => copyIP('alpha.argonix.eu:26217')}
+                                    className="group flex flex-col sm:flex-row items-center gap-3 md:gap-4 px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-3xl backdrop-blur-xl bg-black/40 border border-white/20 hover:border-blue-500/40 hover:bg-black/50 transition-all shadow-2xl w-full sm:w-auto max-w-md sm:max-w-none"
+                                    whileHover={{ scale: 1.03, y: -2 }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-500/20 backdrop-blur-sm flex items-center justify-center border border-blue-500/30">
+                                        <i className="fas fa-gamepad text-blue-400 text-lg md:text-xl"></i>
+                                    </div>
+                                    <div className="text-center sm:text-left flex-1">
+                                        <p className="text-xs text-gray-400 mb-1">Server IP • Verze 1.21.7</p>
+                                        <p className="font-mono font-bold text-blue-400 text-base md:text-lg">alpha.argonix.eu:26217</p>
+                                    </div>
+                                    <motion.div
+                                        animate={{ rotate: copied ? 0 : 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="sm:ml-2"
+                                    >
+                                        {copied ? (
+                                            <i className="fas fa-check text-green-500 text-lg md:text-xl"></i>
+                                        ) : (
+                                            <i className="fas fa-copy text-gray-500 group-hover:text-blue-400 text-base md:text-lg transition-colors"></i>
+                                        )}
+                                    </motion.div>
+                                </motion.button>
+                            </motion.div>
+                        </motion.div>
+
+                        <motion.div 
+                            className="absolute bottom-4 md:bottom-2 left-1/2 -translate-x-1/2"
+                            animate={{ y: [0, 12, 0] }}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                            <i className="fas fa-chevron-down text-gray-600 text-2xl"></i>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        }
+
+        // About Section Component
+        function AboutSection() {
+            const features = [
+                { icon: 'fa-star', title: 'Unikátní zážitek', description: 'Revoluční gameplay na nejnovějších verzích Minecraftu.' },
+                { icon: 'fa-users', title: 'Silná komunita', description: 'Přátelští hráči připravení ti pomoct.' },
+                { icon: 'fa-bolt', title: 'Bez lagů', description: 'Optimalizované servery pro nejlepší herní výkon.' },
+                { icon: 'fa-shield', title: 'Bezpečné hraní', description: 'Anti-cheat a aktivní admin tým 24/7.' }
+            ];
+
+            return (
+                <section className="relative py-32 px-6">
+                    <div className="absolute inset-0 overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    </div>
+
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-20"
+                        >
+                            <span className="inline-block px-5 py-2 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 text-sm text-gray-400 mb-6 shadow-lg">
+                                O nás
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">Kdo jsme?</h2>
+                            <p className="text-gray-400 max-w-3xl mx-auto text-lg leading-relaxed">
+                                Jsme revoluční československý Minecraft projekt. 
+                                NationCraft nabízí nejlepší Duely a brzy přidáme další skvělé minihry!
+                                Vytváříme komunitu, kde se každý baví naplno.
+                            </p>
+                        </motion.div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {features.map((feature, index) => (
+                                <motion.div
+                                    key={feature.title}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
+                                    whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                                    className="group relative p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-blue-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl"
+                                >
+                                    <div className="w-16 h-16 rounded-2xl backdrop-blur-sm bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                                        <i className={`fas ${feature.icon} text-blue-400 text-2xl`}></i>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300">{feature.title}</h3>
+                                    <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4, duration: 0.6 }}
+                            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
+                        >
+                            {[
+                                { value: '99.9%', label: 'Uptime serveru' },
+                                { value: '24/7', label: 'Podpora' },
+                                { value: '0ms', label: 'Průměrný ping' },
+                                { value: 'Nové', label: 'Minihry brzy' }
+                            ].map((stat, index) => (
+                                <motion.div 
+                                    key={stat.label} 
+                                    className="text-center p-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                                >
+                                    <div className="text-3xl md:text-4xl font-black text-blue-400 mb-2">{stat.value}</div>
+                                    <div className="text-sm text-gray-500">{stat.label}</div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Game Modes Section
+        function GameModesSection() {
+            return (
+                <section className="relative py-32 px-6">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6 }}
+                            className="text-center mb-16"
+                        >
+                            <span className="inline-block px-5 py-2 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 text-sm text-gray-400 mb-6 shadow-lg">
+                                Herní módy
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">Co u nás najdeš?</h2>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                            className="relative group max-w-4xl mx-auto"
+                        >
+                            <div className="relative rounded-3xl overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10 hover:border-blue-500/30 transition-all duration-500 shadow-2xl">
+                                <div className="relative h-64 md:h-80 overflow-hidden">
+                                    <motion.img 
+                                        src="./survival.webp"
+                                        alt="Duely"
+                                        className="w-full h-full object-cover"
+                                        whileHover={{ scale: 1.05 }}
+                                        transition={{ duration: 0.6 }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-[#0a0e1a]/50 to-transparent" />
+                                    
+                                    <div className="absolute top-4 right-4">
+                                        <motion.div 
+                                            className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-xl shadow-lg bg-blue-500/20 border border-blue-500/30"
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            whileInView={{ scale: 1, opacity: 1 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: 0.3, duration: 0.5 }}
+                                        >
+                                            <motion.span 
+                                                className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50"
+                                                animate={{ scale: [1, 1.2, 1] }}
+                                                transition={{ duration: 2, repeat: Infinity }}
+                                            />
+                                            <span className="text-sm font-medium text-blue-400">Dostupné nyní</span>
+                                        </motion.div>
+                                    </div>
+
+                                    <div className="absolute bottom-4 left-4">
+                                        <div className="w-16 h-16 rounded-2xl backdrop-blur-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-2xl">
+                                            <i className="fas fa-gamepad text-3xl text-blue-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-8">
+                                    <h3 className="text-3xl font-black text-white mb-4 group-hover:text-blue-400 transition-colors duration-300">
+                                        Duely
+                                    </h3>
+                                    <p className="text-gray-400 mb-6 leading-relaxed text-lg">
+                                        Prokáž své dovednosti v napínavých 1v1 soubojích! Různé režimy a mapy pro nekončící zábavu.
+                                    </p>
+                                    
+                                    <div className="flex flex-wrap gap-2">
+                                        {['1v1 boje', 'Žebříčky', 'Různé módy', 'Rankované zápasy'].map((feature) => (
+                                            <span 
+                                                key={feature}
+                                                className="px-4 py-2 rounded-full backdrop-blur-sm bg-white/5 border border-white/10 text-sm text-gray-300"
+                                            >
+                                                {feature}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        }
+
+        // News Section with Modal
+        function NewsSection() {
+            const [selectedNews, setSelectedNews] = useState(null);
+
+            return (
+                <section className="relative py-32 px-6">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="flex flex-col items-center mb-16"
+                        >
+                            <span className="inline-block px-5 py-2 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 text-sm text-gray-400 mb-6 shadow-lg">
+                                Novinky
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-black text-white text-center mb-6">
+                                Nejnovější oznámení
+                            </h2>
+                            <a 
+                                href="https://discord.com/channels/1136653833343357019/1136653833787949148" 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors"
+                            >
+                                Zobrazit více
+                                <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {newsData.map((item, index) => (
+                                <motion.article
+                                    key={item.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.15, duration: 0.6 }}
+                                    whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                                    className="group p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-blue-500/30 hover:bg-white/10 transition-all duration-500 cursor-pointer shadow-2xl"
+                                >
+                                    <div className="flex items-center justify-between mb-5">
+                                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-sm bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
+                                            {item.type === 'Novinka' && <i className="fas fa-star"></i>}
+                                            {item.type === 'Oznámení' && <i className="fas fa-bullhorn"></i>}
+                                            {item.type === 'Event' && <i className="fas fa-calendar"></i>}
+                                            {item.type}
+                                        </span>
+                                        <div className="flex items-center gap-2 text-gray-500 text-xs">
+                                            <i className="fas fa-calendar"></i>
+                                            {item.date}
+                                        </div>
+                                    </div>
+
+                                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-gray-400 leading-relaxed mb-6">{item.excerpt}</p>
+
+                                    <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                                        <div className="flex items-center gap-1">
+                                            <i className="fas fa-user"></i>
+                                            <span>{item.author}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <i className="fas fa-clock"></i>
+                                            <span>{item.readTime}</span>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => setSelectedNews(item)}
+                                        className="flex items-center gap-2 text-sm font-semibold text-gray-500 group-hover:text-blue-400 transition-colors"
+                                    >
+                                        Číst více
+                                        <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                    </button>
+                                </motion.article>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Modal */}
+                    <AnimatePresence>
+                        {selectedNews && (
+                            <motion.div 
+                                className="dialog-overlay"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setSelectedNews(null)}
+                            >
+                                <motion.div 
+                                    className="dialog-content"
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0.9, opacity: 0 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <div className="p-6">
+                                        <button
+                                            onClick={() => setSelectedNews(null)}
+                                            className="absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+                                        >
+                                            <i className="fas fa-times text-gray-400"></i>
+                                        </button>
+
+                                        <div className="mb-4">
+                                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-sm bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
+                                                {selectedNews.type === 'Novinka' && <i className="fas fa-star"></i>}
+                                                {selectedNews.type === 'Oznámení' && <i className="fas fa-bullhorn"></i>}
+                                                {selectedNews.type === 'Event' && <i className="fas fa-calendar"></i>}
+                                                {selectedNews.type}
+                                            </span>
+                                        </div>
+
+                                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                                            {selectedNews.title}
+                                        </h2>
+
+                                        <div className="flex items-center gap-4 text-sm text-gray-400 mb-6 pb-6 border-b border-white/10">
+                                            <div className="flex items-center gap-2">
+                                                <i className="fas fa-user"></i>
+                                                <span>{selectedNews.author}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <i className="fas fa-clock"></i>
+                                                <span>{selectedNews.readTime}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <i className="fas fa-calendar"></i>
+                                                <span>{selectedNews.date}</span>
+                                            </div>
+                                        </div>
+
+                                        {selectedNews.image && (
+                                            <div className="mb-6 rounded-2xl overflow-hidden">
+                                                <img 
+                                                    src={selectedNews.image} 
+                                                    alt={selectedNews.title}
+                                                    className="w-full h-auto"
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="prose prose-invert max-w-none">
+                                            {selectedNews.content.split('\n').map((paragraph, idx) => (
+                                                <p key={idx} className="text-gray-300 leading-relaxed mb-4">
+                                                    {paragraph}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </section>
+            );
+        }
+
+        // Discord Section
+        function DiscordSection() {
+            return (
+                <section className="relative py-32 px-6 overflow-hidden">
+                    <div className="absolute inset-0 bg-[#5865F2]/5" />
+                    
+                    <motion.div
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#5865F2]/5"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+                    />
+                    <motion.div
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-[#5865F2]/3"
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                    />
+
+                    <div className="relative max-w-4xl mx-auto text-center">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            className="inline-flex items-center justify-center w-28 h-28 rounded-3xl backdrop-blur-xl bg-[#5865F2]/20 border border-[#5865F2]/30 mb-8 shadow-2xl"
+                        >
+                            <i className="fab fa-discord text-[#5865F2] text-6xl"></i>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                        >
+                            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                                Připoj se na náš <span className="text-[#5865F2]">Discord</span>
+                            </h2>
+                            <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+                                Chceš jako první vědět o novinkách, hovořit s komunitou, nebo vyhledat pomoc?
+                                Discord je hlavním komunikačním prostředím našich serverů!
+                            </p>
+
+                            <div className="flex flex-wrap justify-center gap-8 mb-10">
+                                {[
+                                    { icon: 'fa-users', label: 'Členů', value: '50+' },
+                                    { icon: 'fa-headphones', label: 'Aktivních', value: '10+' },
+                                    { icon: 'fa-gift', label: 'Giveaways', value: 'Každý týden' }
+                                ].map((stat, index) => (
+                                    <motion.div 
+                                        key={stat.label} 
+                                        className="flex items-center gap-4 p-4 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                                        whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                                    >
+                                        <div className="w-12 h-12 rounded-xl bg-[#5865F2]/20 backdrop-blur-sm flex items-center justify-center border border-[#5865F2]/30">
+                                            <i className={`fas ${stat.icon} text-[#5865F2] text-xl`}></i>
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="text-xl font-bold text-white">{stat.value}</div>
+                                            <div className="text-xs text-gray-500">{stat.label}</div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+
+                            <motion.div 
+                                whileHover={{ scale: 1.05, y: -4 }} 
+                                whileTap={{ scale: 0.95 }}
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.8, duration: 0.5 }}
+                            >
+                                <a 
+                                    href="https://discord.gg/SwMwGXY6au" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-block px-12 py-7 text-lg backdrop-blur-xl bg-[#5865F2]/20 hover:bg-[#5865F2]/30 text-[#5865F2] rounded-2xl border border-[#5865F2]/30 shadow-2xl transition-colors"
+                                >
+                                    <i className="fab fa-discord text-xl mr-3"></i>
+                                    Připoj se na Discord
+                                </a>
+                            </motion.div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Footer Component
+        function Footer() {
+            const footerLinks = {
+                'Server': ['Pravidla', 'Obchod', 'Tým', 'Wiki'],
+                'Komunita': ['Discord', 'Instagram', 'YouTube', 'TikTok'],
+                'Podpora': ['Nábory', 'Žebříčky', 'Návrhy', 'Kontakt']
+            };
+
+            return (
+                <footer className="relative pt-20 pb-8 px-6 border-t border-white/10">
+                    <div className="absolute inset-0 backdrop-blur-sm bg-black/30 pointer-events-none" />
+                    
+                    <div className="relative max-w-7xl mx-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                            <div className="col-span-2 md:col-span-1">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <img 
+                                        src="./logo.png"
+                                        alt="NationCraft"
+                                        className="w-12 h-12 rounded-xl object-cover"
+                                    />
+                                    <span className="text-lg font-bold text-white">NationCraft</span>
+                                </div>
+                                <p className="text-sm text-gray-500 leading-relaxed">
+                                    Československý Minecraft server. Připoj se k nám!
+                                </p>
+                            </div>
+
+                            {Object.entries(footerLinks).map(([category, links]) => (
+                                <div key={category}>
+                                    <h4 className="text-white font-semibold mb-4">{category}</h4>
+                                    <ul className="space-y-3">
+                                        {links.map((link) => (
+                                            <li key={link}>
+                                                <a 
+                                                    href="#" 
+                                                    className="text-sm text-gray-500 hover:text-blue-400 transition-colors inline-flex items-center gap-1 group"
+                                                >
+                                                    {link}
+                                                    <i className="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center justify-center p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 mb-10 shadow-2xl">
+                            <div className="text-center">
+                                <p className="text-sm text-gray-400 mb-2">Server IP</p>
+                                <code className="text-2xl font-mono font-bold text-blue-400">alpha.argonix.eu:26217</code>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <span>© 2025 NationCraft. Vytvořeno s</span>
+                                <i className="fas fa-heart text-red-500"></i>
+                                <span>od Itz_Anhigy</span>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                <a href="#" className="text-xs text-gray-600 hover:text-blue-400 transition-colors">
+                                    Podmínky služby
+                                </a>
+                                <a href="#" className="text-xs text-gray-600 hover:text-blue-400 transition-colors">
+                                    Ochrana soukromí
+                                </a>
+                                <a href="#" className="text-xs text-gray-600 hover:text-blue-400 transition-colors">
+                                    Cookies
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            return (
+                <div className="min-h-screen bg-[#0a0e1a] overflow-x-hidden">
+                    <HeroSection />
+                    <AboutSection />
+                    <GameModesSection />
+                    <NewsSection />
+                    <DiscordSection />
+                    <Footer />
+                    <CookieBanner />
+                </div>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
