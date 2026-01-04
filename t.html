@@ -471,7 +471,6 @@
             );
         }
 
-        // Game Modes Section
         function GameModesSection() {
             return (
                 <section className="relative py-32 px-6">
@@ -534,14 +533,14 @@
 
                                 <div className="p-8">
                                     <h3 className="text-3xl font-black text-white mb-4 group-hover:text-green-400 transition-colors duration-300">
-                                        Duely
+                                        Survival
                                     </h3>
                                     <p className="text-gray-400 mb-6 leading-relaxed text-lg">
-                                        Prokáž své dovednosti v napínavých 1v1 soubojích! Různé režimy a mapy pro nekončící zábavu.
+                                        Přežij v drsném světě plném nebezpečí! Stav, craftuj a bojuj proti nepřátelům v napínavém survival módu.
                                     </p>
                                     
                                     <div className="flex flex-wrap gap-2">
-                                        {['1v1 boje', 'Žebříčky', 'Různé módy', 'Rankované zápasy'].map((feature) => (
+                                        {['Ekonomika', 'Kooperace', 'Progrese', 'PvP'].map((feature) => (
                                             <span 
                                                 key={feature}
                                                 className="px-4 py-2 rounded-full backdrop-blur-sm bg-white/5 border border-white/10 text-sm text-gray-300"
@@ -557,8 +556,7 @@
                 </section>
             );
         }
-
-        // News Section with Modal
+        
         function NewsSection() {
             const [selectedNews, setSelectedNews] = useState(null);
 
@@ -640,7 +638,6 @@
                         </div>
                     </div>
 
-                    {/* Modal */}
                     <AnimatePresence>
                         {selectedNews && (
                             <motion.div 
@@ -719,7 +716,6 @@
             );
         }
 
-        // Discord Section
         function DiscordSection() {
             return (
                 <section className="relative py-32 px-6 overflow-hidden">
@@ -763,8 +759,8 @@
 
                             <div className="flex flex-wrap justify-center gap-8 mb-10">
                                 {[
-                                    { icon: 'fa-users', label: 'Členů', value: '50+' },
-                                    { icon: 'fa-headphones', label: 'Aktivních', value: '10+' },
+                                    { icon: 'fa-users', label: 'Členů', value: '150+' },
+                                    { icon: 'fa-headphones', label: 'Aktivních', value: '20+' },
                                     { icon: 'fa-gift', label: 'Giveaways', value: 'Každý týden' }
                                 ].map((stat, index) => (
                                     <motion.div 
@@ -810,13 +806,12 @@
                 </section>
             );
         }
-
-                                // Footer Component
+        
         function Footer({ onOpenCookies }) {
             const footerLinks = {
-                'Server': ['Pravidla', 'Obchod', 'Tým', 'Wiki'],
-                'Komunita': ['Discord', 'Instagram', 'YouTube', 'TikTok'],
-                'Podpora': ['Nábory', 'Žebříčky', 'Návrhy', 'Kontakt']
+                'Server': ['Pravidla', 'Obchod', 'Tým'],
+                'Komunita': ['Discord', 'Instagram',],
+                'Podpora': ['Nábory', 'Tickety', 'Kontakt']
             };
 
             return (
@@ -889,7 +884,6 @@
             );
         }
 
-        // Main App Component
         function App() {
             return (
                 <div className="min-h-screen bg-[#0a0e1a] overflow-x-hidden">
@@ -904,7 +898,6 @@
             );
         }
 
-        // Render App
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
