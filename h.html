@@ -227,7 +227,6 @@
         </div>
     </div>
 
-    <!-- Hero Section -->
     <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0">
             <div class="absolute inset-0 bg-[#0a0e1a]"></div>
@@ -242,7 +241,6 @@
             <div class="absolute bottom-1/3 right-1/4 w-[550px] h-[550px] rounded-full bg-emerald-500/10 blur-[120px] animate-glow-delayed"></div>
         </div>
 
-        <!-- Navigation -->
         <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-0 py-0">
             <div id="navInner" class="mx-auto flex items-center justify-between backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl transition-all duration-500 max-w-full rounded-none px-8 py-4">
                 <div class="flex items-center gap-3">
@@ -299,8 +297,7 @@
             </div>
         </div>
     </section>
-
-    <!-- About Section -->
+    
     <section class="relative py-32 px-6">
         <div class="absolute inset-0 overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
@@ -373,7 +370,6 @@
         </div>
     </section>
 
-    <!-- Game Modes Section -->
     <section class="relative py-32 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
@@ -419,7 +415,6 @@
         </div>
     </section>
 
-    <!-- News Section -->
     <section class="relative py-32 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col items-center mb-16">
@@ -432,12 +427,10 @@
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="newsGrid">
-                <!-- News items will be inserted by JavaScript -->
             </div>
         </div>
     </section>
 
-    <!-- News Dialog -->
     <div id="newsDialog" class="dialog-overlay" onclick="closeNewsDialog()">
         <div class="dialog-content" onclick="event.stopPropagation()">
             <div class="p-6">
@@ -458,7 +451,6 @@
         </div>
     </div>
 
-    <!-- Discord Section -->
     <section class="relative py-32 px-6 overflow-hidden">
         <div class="absolute inset-0 bg-[#5865F2]/5"></div>
         
@@ -521,7 +513,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="relative pt-20 pb-8 px-6 border-t border-green-500/20">
         <div class="absolute inset-0 backdrop-blur-sm bg-green-950/20 pointer-events-none"></div>
         
@@ -573,7 +564,7 @@
 
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-green-500/10">
                 <p class="text-sm text-gray-500">
-                    © 2024 NationCraft.cz. Všechna práva vyhrazena.
+                    © 2026 NationCraft.cz. Všechna práva vyhrazena.
                 </p>
                 <div class="flex items-center gap-6">
                     <button onclick="openCookies()" class="text-sm text-gray-500 hover:text-green-400 transition-colors">Cookies</button>
@@ -585,7 +576,6 @@
     </footer>
 
     <script>
-        // News data
         const newsData = [
             {
                 id: 1,
@@ -619,7 +609,6 @@
             }
         ];
 
-        // Render news
         function renderNews() {
             const grid = document.getElementById('newsGrid');
             grid.innerHTML = newsData.map(item => `
@@ -654,7 +643,6 @@
             `).join('');
         }
 
-        // News dialog
         function openNewsDialog(id) {
             const item = newsData.find(n => n.id === id);
             if (!item) return;
@@ -677,15 +665,12 @@
             document.body.style.overflow = '';
         }
 
-        // Copy IP
         function copyIP() {
             navigator.clipboard.writeText('alpha.argonix.eu:26217');
             const btn = document.getElementById('copyBtn');
             btn.classList.add('copied');
             setTimeout(() => btn.classList.remove('copied'), 2000);
         }
-
-        // Cookie functions
         function acceptCookies() {
             localStorage.setItem('cookieConsent', 'accepted');
             document.getElementById('cookieBanner').classList.remove('active');
@@ -700,7 +685,6 @@
             document.getElementById('cookieBanner').classList.add('active');
         }
 
-        // Check cookie consent
         function checkCookieConsent() {
             const consent = localStorage.getItem('cookieConsent');
             if (!consent) {
@@ -710,7 +694,6 @@
             }
         }
 
-        // Navbar scroll effect
         function handleScroll() {
             const navbar = document.getElementById('navbar');
             const navInner = document.getElementById('navInner');
@@ -728,7 +711,6 @@
             }
         }
 
-        // Fetch server status
         async function fetchServerStatus() {
             try {
                 const res = await fetch('https://api.mcsrvstat.us/3/alpha.argonix.eu:26217');
@@ -755,7 +737,6 @@
             }
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             renderNews();
             checkCookieConsent();
@@ -765,7 +746,6 @@
 
         window.addEventListener('scroll', handleScroll);
 
-        // Close dialog on Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeNewsDialog();
