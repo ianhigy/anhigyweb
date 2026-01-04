@@ -119,18 +119,17 @@
           },
           {
             id: 3,
-            title: 'HLASOVÁNÍ O EVENTECH',
-            excerpt: 'Hlasuj o tom, jaké eventy chceš vidět na serveru! Tvůj hlas rozhoduje.',
-            content: 'Tvůj názor je pro nás důležitý! Chceme vytvořit server, který bude plně odpovídat vašim přáním.\n\nHlasuj o:\n- Typech eventů\n- Odměnách\n- Termínech konání\n- A mnohem více!\n\nKaždý hlas se počítá. Zapoj se do našeho Discord serveru a řekni nám, co by ses chtěl vidět!',
-            date: '1.1.2026',
-            type: 'Event',
-            author: 'Community Manager',
-            readTime: '2 min',
+            title: 'BOOST DISCORD SERVERU',
+            excerpt: 'Děkuji moc členům: @Admin • Itz_Andilek , @xSweatify_tech , @Laura_novotnaa za boost našeho discord serveru..',
+            content: 'Společně s ním přicházejí hned dvě novinky. Ta první je, že máme custom role, které vypadají lépe, než kdy dřív. Ta druhá je mnohem poctatnější. Pokud chcete zadarmo podpořit náš projekt, tak si v nastavení profilu můžete nastavit štítek našeho discord serveru. Budeme moc rádi za každého, kdo tak učiní. ',
+            date: '3.1.2026',
+            type: 'Novinka',
+            author: 'Vedení • MaTTy',
+            readTime: '1 min',
             image: null
           }
         ];
-
-        // Cookie Banner Component
+        
         function CookieBanner({ isOpen, onClose }) {
             const acceptCookies = () => {
                 localStorage.setItem('cookieConsent', 'accepted');
@@ -181,7 +180,7 @@
             );
         }
 
-        // Hero Section Component
+
         function HeroSection() {
             const [copied, setCopied] = useState(false);
             const [playerCount, setPlayerCount] = useState(0);
@@ -266,7 +265,6 @@
                         />
                     </div>
 
-                    {/* Navigation */}
                     <motion.nav 
                         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'px-6 py-6' : 'px-0 py-0'}`}
                         initial={{ opacity: 0, y: -20 }}
@@ -299,7 +297,6 @@
                         </div>
                     </motion.nav>
 
-                    {/* Hero Content */}
                     <div className="relative z-10 text-center px-4 md:px-6 max-w-7xl mx-auto pt-24 md:pt-32 pb-20 md:pb-0">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -359,7 +356,7 @@
                                         <i className="fas fa-gamepad text-green-400 text-lg md:text-xl"></i>
                                     </div>
                                     <div className="text-center sm:text-left flex-1">
-                                        <p className="text-xs text-gray-400 mb-1">Server IP • Verze 1.21.7</p>
+                                        <p className="text-xs text-gray-400 mb-1">Server IP • Verze 1.21.10</p>
                                         <p className="font-mono font-bold text-green-400 text-base md:text-lg">alpha.argonix.eu:26217</p>
                                     </div>
                                     <motion.div
