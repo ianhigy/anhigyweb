@@ -1,0 +1,669 @@
+import React, { useEffect } from 'react';
+
+export default function Team() {
+    useEffect(() => {
+        function copyIP() {
+            navigator.clipboard.writeText('alpha.argonix.eu:26217');
+            const btn = document.getElementById('copyBtn');
+            btn.classList.add('copied');
+            setTimeout(() => btn.classList.remove('copied'), 2000);
+        }
+        
+        window.copyIP = copyIP;
+
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('cookieBanner').classList.remove('active');
+        }
+
+        function declineCookies() {
+            localStorage.setItem('cookieConsent', 'declined');
+            document.getElementById('cookieBanner').classList.remove('active');
+        }
+
+        function openCookies() {
+            document.getElementById('cookieBanner').classList.add('active');
+        }
+
+        window.acceptCookies = acceptCookies;
+        window.declineCookies = declineCookies;
+        window.openCookies = openCookies;
+
+        function checkCookieConsent() {
+            const consent = localStorage.getItem('cookieConsent');
+            if (!consent) {
+                setTimeout(() => {
+                    document.getElementById('cookieBanner').classList.add('active');
+                }, 1000);
+            }
+        }
+
+        function handleScroll() {
+            const navbar = document.getElementById('navbar');
+            const navInner = document.getElementById('navInner');
+            
+            if (window.scrollY > 20) {
+                navbar.classList.add('px-6', 'py-6');
+                navbar.classList.remove('px-0', 'py-0');
+                navInner.classList.add('max-w-7xl', 'rounded-3xl');
+                navInner.classList.remove('max-w-full', 'rounded-none');
+            } else {
+                navbar.classList.remove('px-6', 'py-6');
+                navbar.classList.add('px-0', 'py-0');
+                navInner.classList.remove('max-w-7xl', 'rounded-3xl');
+                navInner.classList.add('max-w-full', 'rounded-none');
+            }
+        }
+
+        async function fetchServerStatus() {
+            try {
+                const res = await fetch('https://api.mcsrvstat.us/3/alpha.argonix.eu:26217');
+                const data = await res.json();
+                
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                const playerCount = document.getElementById('playerCount');
+
+                if (data.online && data.players) {
+                    statusDot.classList.remove('bg-red-500', 'shadow-red-500/50');
+                    statusDot.classList.add('bg-green-500', 'shadow-green-500/50');
+                    statusText.textContent = 'Server je online';
+                    playerCount.textContent = `• ${data.players.online || 0} hráčů`;
+                    playerCount.classList.remove('hidden');
+                } else {
+                    statusDot.classList.remove('bg-green-500', 'shadow-green-500/50');
+                    statusDot.classList.add('bg-red-500', 'shadow-red-500/50');
+                    statusText.textContent = 'Server je offline';
+                    playerCount.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Failed to fetch server status');
+            }
+        }
+
+        checkCookieConsent();
+        fetchServerStatus();
+        const interval = setInterval(fetchServerStatus, 60000);
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    return (
+        <div>
+            <style>{`
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+                    background: #0a0e1a;
+                    color: white;
+                    overflow-x: hidden;
+                }
+                
+                .animate-fade-in {
+                    animation: fadeIn 0.6s ease-out forwards;
+                }
+                
+                .animate-fade-in-delay-1 { animation-delay: 0.3s; opacity: 0; }
+                .animate-fade-in-delay-2 { animation-delay: 0.5s; opacity: 0; }
+                .animate-fade-in-delay-3 { animation-delay: 0.6s; opacity: 0; }
+                .animate-fade-in-delay-4 { animation-delay: 0.9s; opacity: 0; }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.2); }
+                }
+                
+                @keyframes float {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(12px); }
+                }
+                
+                @keyframes glow {
+                    0%, 100% { opacity: 0.15; transform: scale(1); }
+                    50% { opacity: 0.3; transform: scale(1.2); }
+                }
+                
+                .animate-pulse-dot {
+                    animation: pulse 2s infinite;
+                }
+                
+                .animate-float {
+                    animation: float 2.5s ease-in-out infinite;
+                }
+                
+                .animate-glow {
+                    animation: glow 15s ease-in-out infinite;
+                }
+                
+                .animate-glow-delayed {
+                    animation: glow 18s ease-in-out infinite;
+                    animation-delay: 2s;
+                }
+                
+                .hover-lift {
+                    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+                }
+                
+                .hover-lift:hover {
+                    transform: translateY(-8px);
+                }
+                
+                .hover-scale {
+                    transition: transform 0.2s ease;
+                }
+                
+                .hover-scale:hover {
+                    transform: scale(1.05);
+                }
+                
+                .nav-link {
+                    position: relative;
+                }
+                
+                .nav-link::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -4px;
+                    left: 0;
+                    width: 0;
+                    height: 2px;
+                    background: #4ade80;
+                    transition: width 0.3s ease;
+                }
+                
+                .nav-link:hover::after,
+                .nav-link.active::after {
+                    width: 100%;
+                }
+
+                .cookie-banner {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 100;
+                    padding: 1.5rem;
+                    background: rgba(10, 14, 26, 0.95);
+                    backdrop-filter: blur(20px);
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    transform: translateY(100%);
+                    opacity: 0;
+                    transition: transform 0.3s ease, opacity 0.3s ease;
+                }
+                
+                .cookie-banner.active {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                
+                .copy-btn.copied .copy-icon { display: none; }
+                .copy-btn.copied .check-icon { display: block; }
+                .copy-btn .check-icon { display: none; }
+            `}</style>
+
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+            <div id="cookieBanner" className="cookie-banner">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex-1">
+                        <h3 className="text-white font-bold mb-2">🍪 Používáme cookies</h3>
+                        <p className="text-sm text-gray-400">
+                            Tento web používá cookies pro zlepšení uživatelského zážitku a analytické účely. 
+                            Pokračováním souhlasíte s našimi
+                            <a href="#" className="text-green-400 hover:text-green-300 underline">podmínkami použití cookies</a>.
+                        </p>
+                    </div>
+                    <div className="flex gap-3">
+                        <button onClick={() => window.declineCookies()} className="px-6 py-2 rounded-xl backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all">
+                            Odmítnout
+                        </button>
+                        <button onClick={() => window.acceptCookies()} className="px-6 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 transition-all">
+                            Přijmout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0">
+                    <div className="absolute inset-0 bg-[#0a0e1a]"></div>
+                    <div className="absolute inset-0 opacity-50">
+                        <img src="./background.png" alt="Background" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/30 via-[#0a0e1a]/50 to-[#0a0e1a]"></div>
+                    
+                    <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'linear-gradient(rgba(59,130,246,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.15) 1px, transparent 1px)', backgroundSize: '80px 80px', transform: 'rotate(-3deg) scale(1.2)'}}></div>
+
+                    <div className="absolute top-1/3 left-1/4 w-[600px] h-[600px] rounded-full bg-green-500/10 blur-[120px] animate-glow"></div>
+                    <div className="absolute bottom-1/3 right-1/4 w-[550px] h-[550px] rounded-full bg-emerald-500/10 blur-[120px] animate-glow-delayed"></div>
+                </div>
+
+                <nav id="navbar" className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-0 py-0">
+                    <div id="navInner" className="mx-auto flex items-center justify-between backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl transition-all duration-500 max-w-full rounded-none px-8 py-4">
+                        <a href="index.html" className="flex items-center gap-3">
+                            <img src="./logo.png" alt="NationCraft" className="w-12 h-12 rounded-xl object-cover" />
+                            <span className="text-xl font-bold text-white">NationCraft</span>
+                        </a>
+
+                        <div className="hidden md:flex items-center gap-8">
+                            <a href="./nc.html" className="nav-link text-sm text-gray-400 hover:text-white transition-colors">Domů</a>
+                            <a href="./pravidla.html" className="nav-link text-sm text-gray-400 hover:text-white transition-colors">Pravidla</a>
+                            <a href="./hlasovani.html" className="nav-link text-sm text-gray-400 hover:text-white transition-colors">Hlasování</a>
+                            <a href="#" className="nav-link active text-sm text-green-400 transition-colors">Tým</a>
+                            <a href="./nabory.html" className="nav-link text-sm text-gray-400 hover:text-white transition-colors">Nábory</a>
+                            <a href="#" className="nav-link text-sm text-gray-400 hover:text-white transition-colors">Store</a>
+                        </div>
+                    </div>
+                </nav>
+
+                <div className="relative z-10 text-center px-4 md:px-6 max-w-7xl mx-auto pt-24 md:pt-32 pb-20 md:pb-0">
+                    <div className="animate-fade-in">
+                        <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-2 md:py-2.5 rounded-full backdrop-blur-xl bg-black/40 border border-white/20 shadow-2xl mb-6 md:mb-8 animate-fade-in animate-fade-in-delay-1">
+                            <span id="statusDot" className="w-2.5 h-2.5 rounded-full shadow-lg bg-red-500 shadow-red-500/50 animate-pulse-dot"></span>
+                            <span id="statusText" className="text-xs md:text-sm text-gray-300">Načítám...</span>
+                            <span id="playerCount" className="text-xs md:text-sm font-bold text-green-400 hidden"></span>
+                        </div>
+
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 leading-tight animate-fade-in animate-fade-in-delay-2">
+                            <span className="text-white drop-shadow-2xl">NationCraft.cz</span>
+                        </h1>
+
+                        <p className="text-base md:text-lg lg:text-xl text-white max-w-2xl mx-auto mb-6 md:mb-10 leading-relaxed drop-shadow-lg px-4 animate-fade-in animate-fade-in-delay-3">
+                            Náš tým
+                        </p>
+
+                        <div className="flex justify-center mb-6 md:mb-10 animate-fade-in animate-fade-in-delay-4">
+                            <button id="copyBtn" onClick={() => window.copyIP()} className="copy-btn group flex flex-col sm:flex-row items-center gap-3 md:gap-4 px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-3xl backdrop-blur-xl bg-black/40 border border-white/20 hover:border-green-500/40 hover:bg-black/50 transition-all shadow-2xl w-full sm:w-auto max-w-md sm:max-w-none hover-scale">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-green-500/20 backdrop-blur-sm flex items-center justify-center border border-green-500/30">
+                                    <i className="fas fa-gamepad text-green-400 text-lg md:text-xl"></i>
+                                </div>
+                                <div className="text-center sm:text-left flex-1">
+                                    <p className="text-xs text-gray-400 mb-1">Server IP • Verze 1.21.10</p>
+                                    <p className="font-mono font-bold text-green-400 text-base md:text-lg">alpha.argonix.eu:26217</p>
+                                </div>
+                                <div className="sm:ml-2">
+                                    <i className="copy-icon fas fa-copy text-gray-500 group-hover:text-green-400 text-base md:text-lg transition-colors"></i>
+                                    <i className="check-icon fas fa-check text-green-500 text-lg md:text-xl"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 animate-float">
+                        <i className="fas fa-chevron-down text-gray-600 text-2xl"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section className="relative py-32 px-6">
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                </div>
+
+                <div className="max-w-6xl mx-auto">
+                    <div className="space-y-12">
+                        {/* Vedení */}
+                        <div>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+                                    <i className="fas fa-shield text-red-400 text-2xl"></i>
+                                </div>
+                                <h2 className="text-3xl font-black text-white">Vedení</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-red-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/cibulka08/100" alt="cibulka08" className="w-20 h-20 rounded-2xl border-2 border-red-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">cibulka08</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold mb-3">
+                                                Vedení
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:mavox.nationcraft@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://www.instagram.com/cibulkaa08" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/1093598818924253306" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-red-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/craftingmatty/100" alt="craftingmatty" className="w-20 h-20 rounded-2xl border-2 border-red-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">craftingmatty</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold mb-3">
+                                                Vedení
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="https://www.instagram.com/matty_spalek" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/1093598818924253306" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Admin */}
+                        <div>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+                                    <i className="fas fa-shield text-cyan-400 text-2xl"></i>
+                                </div>
+                                <h2 className="text-3xl font-black text-white">Admin</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-cyan-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/Itz_Andilek/100" alt="Itz_Andilek" className="w-20 h-20 rounded-2xl border-2 border-cyan-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">Itz_Andilek</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-3">
+                                                Admin
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:ondrej.andel@email.cz" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://www.instagram.com/itz.xsweatify" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/670972552805351426" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-cyan-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/step1kk_/100" alt="step1kk_" className="w-20 h-20 rounded-2xl border-2 border-cyan-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">step1kk_</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-3">
+                                                Admin
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:step1kk.nationcraft@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://www.instagram.com/stepan_lebloch" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/919513971432779806" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Developer */}
+                        <div>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-2xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center">
+                                    <i className="fas fa-code text-pink-400 text-2xl"></i>
+                                </div>
+                                <h2 className="text-3xl font-black text-white">Developer</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-pink-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/Itz_Anhigy/100" alt="Itz_Anhigy" className="w-20 h-20 rounded-2xl border-2 border-pink-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">Itz_Anhigy</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-400 text-xs font-semibold mb-3">
+                                                Developer
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:servers.anhigy@outlook.com" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://www.instagram.com/not_anhigy" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/1445477596451049502" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-pink-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/BednqGG/100" alt="BednqGG" className="w-20 h-20 rounded-2xl border-2 border-pink-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">BednqGG</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-400 text-xs font-semibold mb-3">
+                                                Developer
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:filipbenda32@seznam.cz" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://www.instagram.com/cz.bednq/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/1295789713818517575" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Helper */}
+                        <div>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-2xl bg-green-500/20 border border-green-500/30 flex items-center justify-center">
+                                    <i className="fas fa-heart text-green-400 text-2xl"></i>
+                                </div>
+                                <h2 className="text-3xl font-black text-white">Helper</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-green-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/SeptunLover/100" alt="SeptunLover" className="w-20 h-20 rounded-2xl border-2 border-green-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">SeptunLover</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-semibold mb-3">
+                                                HL. HELPER
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="https://www.instagram.com/septunlover_qp" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/1077762652509577297" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-green-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/BlobyCZ/100" alt="BlobyCZ" className="w-20 h-20 rounded-2xl border-2 border-green-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">BlobyCZ</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-semibold mb-3">
+                                                Helper
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="https://www.instagram.com/blobycz" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://youtube.com/@BlobyCZE" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-red-400 transition-colors">
+                                                    <i className="fab fa-youtube text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/1178258199590228078" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-green-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/Hemenex13/100" alt="Hemenex13" className="w-20 h-20 rounded-2xl border-2 border-green-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">Hemenex13</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-semibold mb-3">
+                                                Helper
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:jakubforst2008@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/976506006446157834" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Builder */}
+                        <div>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
+                                    <i className="fas fa-hammer text-teal-400 text-2xl"></i>
+                                </div>
+                                <h2 className="text-3xl font-black text-white">Builder</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-teal-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/momeop/100" alt="momeop" className="w-20 h-20 rounded-2xl border-2 border-teal-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">momeop</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-400 text-xs font-semibold mb-3">
+                                                HL. BUILDER
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:iopovdede@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/693169474202763294" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-teal-500/30 hover:bg-white/10 transition-all duration-500 shadow-2xl hover-lift">
+                                    <div className="flex items-center gap-4">
+                                        <img src="https://mc-heads.net/avatar/TagzTurtlee/100" alt="TagzTurtlee" className="w-20 h-20 rounded-2xl border-2 border-teal-500/30" />
+                                        <div className="flex-1">
+                                            <h3 className="text-xl font-bold text-white mb-2">TagzTurtlee</h3>
+                                            <div className="inline-block px-3 py-1 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-400 text-xs font-semibold mb-3">
+                                                Builder
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <a href="mailto:tagzturtlee@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                                                    <i className="fas fa-envelope text-lg"></i>
+                                                </a>
+                                                <a href="https://www.instagram.com/tagzturtlee_builder" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors">
+                                                    <i className="fab fa-instagram text-lg"></i>
+                                                </a>
+                                                <a href="https://discord.com/users/614161616543416320" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-400 transition-colors">
+                                                    <i className="fab fa-discord text-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <footer className="relative pt-20 pb-8 px-6 border-t border-green-500/20">
+                <div className="absolute inset-0 backdrop-blur-sm bg-green-950/20 pointer-events-none"></div>
+                
+                <div className="relative max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                        <div className="col-span-2 md:col-span-1">
+                            <div className="flex items-center gap-3 mb-4">
+                                <img src="./logo.png" alt="NationCraft" className="w-12 h-12 rounded-xl object-cover" />
+                                <span className="text-lg font-bold text-white">NationCraft</span>
+                            </div>
+                            <p className="text-sm text-gray-500 leading-relaxed">
+                                Československý Minecraft server. Připoj se k nám!
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 className="text-white font-semibold mb-4">Server</h4>
+                            <ul className="space-y-3">
+                                <li><a href="#" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-green-400 transition-colors inline-flex items-center gap-1 group">Obchod <i className="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i></a></li>
+                                <li><a href="https://discord.com/channels/1136653833343357019/1136653833787949151" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-green-400 transition-colors inline-flex items-center gap-1 group">Tickety <i className="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i></a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 className="text-white font-semibold mb-4">Komunita</h4>
+                            <ul className="space-y-3">
+                                <li><a href="https://discord.com/invite/SwMwGXY6au" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-green-400 transition-colors inline-flex items-center gap-1 group">Discord <i className="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i></a></li>
+                                <li><a href="https://www.instagram.com/nationcraft.cz/" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-green-400 transition-colors inline-flex items-center gap-1 group">Instagram <i className="fas fa-external-link-alt text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-green-500/10">
+                        <p className="text-sm text-gray-500">
+                            © 2026 NationCraft.cz. Vytvořeno s ❤️ Itz_Anhigy.
+                        </p>
+                        <div className="flex items-center gap-6">
+                            <button onClick={() => window.openCookies()} className="text-sm text-gray-500 hover:text-green-400 transition-colors">Cookies</button>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    );
+}
